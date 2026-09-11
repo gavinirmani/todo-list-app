@@ -3,53 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern To-Do List</title>
+    <title>TaskFlow - Productivity Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <h1>My Tasks</h1>
-            <p class="task-count">
-                <span id="remaining-count">0</span> remaining task<span id="plural">s</span>
-            </p>
-        </header>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-tasks"></i>
+                    <span>TaskFlow</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
 
-        <!-- Input Section -->
-        <div class="input-section">
-            <input 
-                type="text" 
-                id="task-input" 
-                class="task-input" 
-                placeholder="Add a new task..."
-                aria-label="Add a new task"
-            >
-            <button id="add-btn" class="add-btn" aria-label="Add task">
-                <span>+</span>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <p class="nav-label">MAIN</p>
+                    <button class="nav-item active" data-view="dashboard" aria-label="Dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-item" data-view="all" aria-label="All Tasks">
+                        <i class="fas fa-list"></i>
+                        <span>All Tasks</span>
+                    </button>
+                    <button class="nav-item" data-view="today" aria-label="Today's Tasks">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Today</span>
+                    </button>
+                    <button class="nav-item" data-view="upcoming" aria-label="Upcoming Tasks">
+                        <i class="fas fa-calendar"></i>
+                        <span>Upcoming</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-label">FILTER</p>
+                    <button class="nav-item" data-view="completed" aria-label="Completed Tasks">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Completed</span>
+                    </button>
+                    <button class="nav-item" data-view="important" aria-label="Important Tasks">
+                        <i class="fas fa-star"></i>
+                        <span>Important</span>
+                    </button>
+                    <button class="nav-item" data-view="overdue" aria-label="Overdue Tasks">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Overdue</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-label">CATEGORIES</p>
+                    <div id="categories-nav" class="categories-nav">
+                        <!-- Categories will be added here dynamically -->
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <button class="nav-item" data-view="settings" aria-label="Settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" class="search-input" placeholder="Search tasks..." aria-label="Search tasks">
+                    </div>
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard View -->
+                <section id="dashboard-view" class="view-section active">
+                    <!-- Statistics Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon tasks-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">Total Tasks</p>
+                                <p class="stat-value" id="total-tasks">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon pending-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">Pending</p>
+                                <p class="stat-value" id="pending-tasks">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon completed-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">Completed</p>
+                                <p class="stat-value" id="completed-tasks">0</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon overdue-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">Overdue</p>
+                                <p class="stat-value" id="overdue-tasks">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Section -->
+                    <div class="progress-section">
+                        <div class="progress-card">
+                            <h3>Completion Progress</h3>
+                            <div class="progress-container">
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar" id="progress-bar"></div>
+                                </div>
+                                <p class="progress-text"><span id="completion-percentage">0</span>% Complete</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Tasks Section -->
+                    <div class="recent-section">
+                        <h3>Recent Tasks</h3>
+                        <div id="recent-tasks" class="tasks-list">
+                            <!-- Recent tasks will be displayed here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- All Tasks View -->
+                <section id="all-view" class="view-section">
+                    <div class="view-controls">
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="active">Active</button>
+                            <button class="filter-btn" data-filter="completed">Completed</button>
+                        </div>
+                        <div class="sort-dropdown">
+                            <select id="sort-select" class="sort-select" aria-label="Sort tasks">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="due-date">Due Date</option>
+                                <option value="priority">Priority</option>
+                                <option value="alphabetical">Alphabetical</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="all-tasks-list" class="tasks-list">
+                        <!-- Tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Today View -->
+                <section id="today-view" class="view-section">
+                    <div id="today-tasks-list" class="tasks-list">
+                        <!-- Today's tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Upcoming View -->
+                <section id="upcoming-view" class="view-section">
+                    <div id="upcoming-tasks-list" class="tasks-list">
+                        <!-- Upcoming tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Completed View -->
+                <section id="completed-view" class="view-section">
+                    <div id="completed-tasks-list" class="tasks-list">
+                        <!-- Completed tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Important View -->
+                <section id="important-view" class="view-section">
+                    <div id="important-tasks-list" class="tasks-list">
+                        <!-- Important tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Overdue View -->
+                <section id="overdue-view" class="view-section">
+                    <div id="overdue-tasks-list" class="tasks-list">
+                        <!-- Overdue tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Category View -->
+                <section id="category-view" class="view-section">
+                    <div id="category-tasks-list" class="tasks-list">
+                        <!-- Category tasks will be displayed here -->
+                    </div>
+                </section>
+
+                <!-- Settings View -->
+                <section id="settings-view" class="view-section">
+                    <div class="settings-container">
+                        <div class="settings-card">
+                            <h3>Appearance</h3>
+                            <div class="setting-item">
+                                <label for="dark-mode-toggle">Dark Mode</label>
+                                <button class="toggle-switch" id="dark-mode-toggle" aria-label="Toggle dark mode">
+                                    <span class="toggle-slider"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <h3>Actions</h3>
+                            <button class="btn btn-secondary" id="clear-completed-btn">
+                                <i class="fas fa-trash-alt"></i> Clear Completed Tasks
+                            </button>
+                            <button class="btn btn-danger" id="clear-all-btn">
+                                <i class="fas fa-exclamation-triangle"></i> Clear All Tasks
+                            </button>
+                            <button class="btn btn-danger" id="reset-app-btn">
+                                <i class="fas fa-redo"></i> Reset Application
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Add Task Button -->
+            <button class="fab" id="add-task-btn" aria-label="Add new task">
+                <i class="fas fa-plus"></i>
             </button>
-        </div>
+        </main>
+    </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="active">Active</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
+    <!-- Add/Edit Task Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Task</h2>
+                <button class="modal-close" id="modal-close" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="task-form" class="task-form">
+                <div class="form-group">
+                    <label for="task-title">Task Title *</label>
+                    <input type="text" id="task-title" class="form-input" placeholder="Enter task title" required>
+                    <span class="error-message" id="title-error"></span>
+                </div>
 
-        <!-- Tasks List -->
-        <div class="tasks-container">
-            <ul id="tasks-list" class="tasks-list">
-                <!-- Tasks will be added here by JavaScript -->
-            </ul>
-            <div id="empty-state" class="empty-state">
-                <p>No tasks yet. Add one to get started! 🚀</p>
+                <div class="form-group">
+                    <label for="task-description">Description</label>
+                    <textarea id="task-description" class="form-textarea" placeholder="Add task description (optional)" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-category">Category *</label>
+                        <select id="task-category" class="form-select" required>
+                            <option value="">Select a category</option>
+                            <option value="Personal">Personal</option>
+                            <option value="University">University</option>
+                            <option value="Work">Work</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Health">Health</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-priority">Priority *</label>
+                        <select id="task-priority" class="form-select" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-due-date">Due Date *</label>
+                        <input type="date" id="task-due-date" class="form-input" required>
+                        <span class="error-message" id="date-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="task-due-time">Due Time</label>
+                        <input type="time" id="task-due-time" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="form-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h2 id="confirm-title">Confirm Action</h2>
+            </div>
+            <p id="confirm-message">Are you sure?</p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="confirm-cancel-btn">Cancel</button>
+                <button class="btn btn-danger" id="confirm-proceed-btn">Proceed</button>
             </div>
         </div>
+    </div>
 
-        <!-- Clear Completed Button -->
-        <div class="action-section">
-            <button id="clear-completed-btn" class="clear-btn">Clear Completed</button>
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="empty-state">
+        <div class="empty-state-content">
+            <i class="fas fa-inbox"></i>
+            <h3 id="empty-title">No Tasks Yet</h3>
+            <p id="empty-message">Create your first task to get started!</p>
         </div>
     </div>
 
